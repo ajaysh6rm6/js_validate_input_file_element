@@ -1,0 +1,55 @@
+const inputFileElement = document.querySelector('input[type="file"][name="inputFileElement"]');
+const messageElement = document.getElementById('msgTrack');
+const uploadBtnElement = document.getElementById('upload-btn');
+const requiredWidth = 800;
+const requiredHeight = 600;
+const maxSizeInBytes = 100 * 1024 * 1024; // 100MB
+
+inputFileElement.addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  const fileType = file.type;
+  const fileSize = file.size;
+
+  // Validate file type
+  if (fileType !== 'image/png') {
+    handleInvalidFile('Please select an image/png file.', 'red');
+    return;
+  }
+
+  // Validate file size
+  if (fileSize > maxSizeInBytes) {
+    handleInvalidFile('Please select a file smaller than 100MB.', 'red');
+    return;
+  }
+
+  // Create an image element to check the pixel dimensions
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  
+  img.onload = function() {
+    const width = this.width;
+    const height = this.height;
+
+    // Validate pixel dimensions
+    if (width !== requiredWidth || height !== requiredHeight) {
+      handleInvalidFile(`Please select an image with dimensions ${requiredWidth}x${requiredHeight}.`, 'red');
+      return;
+    }
+
+    // File type, size, and pixel dimensions are valid
+    setMessage('Valid file', 'green');
+    // ...
+  };
+});
+
+function handleInvalidFile(msg, color) {
+  setMessage(msg, color);
+  inputFileElement.value = ''; // Reset the file input
+}
+
+function setMessage(msg, color) {
+  inputFileElement.style.borderColor = color;
+  messageElement.style.color = color;
+  messageElement.textContent = msg;
+  uploadBtnElement.disabled = (color === 'red');
+}
