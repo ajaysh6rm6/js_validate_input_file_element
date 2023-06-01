@@ -3,7 +3,7 @@
 //<button type="submit" class="btn btn-primary me-1" id="uploadBtnElement">Submit</button>
 
 // Select DOM elements
-const inputFileElement = document.querySelector('input[type="file"][name="inputFileElement"]');
+const inputFile = document.querySelector('input[type="file"][name="inputFileElement"]');
 const messageElement = document.getElementById('messageElement');
 const uploadBtnElement = document.getElementById('uploadBtnElement');
 
@@ -13,31 +13,31 @@ const requiredHeight = 600;
 const maxSizeInBytes = 100 * 1024 * 1024; // 100MB
 
 // Add event listener to file input
-inputFileElement.addEventListener('change', function(event) {
-  const file = event.target.files[0];
+inputFile.addEventListener('change', function(event) {
+  const selectedFile = event.target.files[0];
 
   // Check if a file is selected
-  if (!file) {
+  if (!selectedFile) {
     handleInvalidFile('Please choose a file.', 'red');
     return;
   }
 
   // Validate file type
-  if (file.type !== 'image/png') {
+  if (selectedFile.type !== 'image/png') {
     handleInvalidFile('Please select an image/png file.', 'red');
     return;
   }
 
   // Validate file size
-  if (file.size > maxSizeInBytes) {
+  if (selectedFile.size > maxSizeInBytes) {
     handleInvalidFile('Please select a file smaller than 100MB.', 'red');
     return;
   }
 
   // Create an image element to check the pixel dimensions
-  const img = new Image();
+  const imageElement = new Image();
 
-  img.onload = function() {
+  imageElement.onload = function() {
     // Validate pixel dimensions
     if (this.width !== requiredWidth || this.height !== requiredHeight) {
       handleInvalidFile(`Please select an image with dimensions ${requiredWidth}x${requiredHeight}.`, 'red');
@@ -45,27 +45,27 @@ inputFileElement.addEventListener('change', function(event) {
     }
 
     // File type, size, and pixel dimensions are valid
-    setMessage('Valid file', 'green');
+    setMessage('Valid file selected', 'green');
     // ...
   };
 
-  img.onerror = function() {
+  imageElement.onerror = function() {
     handleInvalidFile('Unable to load the image.', 'red');
   };
 
-  img.src = URL.createObjectURL(file);
+  imageElement.src = URL.createObjectURL(selectedFile);
 });
 
 // Handle invalid file or no file selected
-function handleInvalidFile(msg, color) {
-  setMessage(msg, color);
-  inputFileElement.value = ''; // Reset the file input
+function handleInvalidFile(errorMessage, color) {
+  setMessage(errorMessage, color);
+  inputFile.value = ''; // Reset the file input
 }
 
 // Set message and update styles
-function setMessage(msg, color) {
-  inputFileElement.style.borderColor = color;
+function setMessage(message, color) {
+  inputFile.style.borderColor = color;
   messageElement.style.color = color;
-  messageElement.textContent = msg;
+  messageElement.textContent = message;
   uploadBtnElement.disabled = (color === 'red');
 }
